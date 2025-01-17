@@ -36,7 +36,7 @@ const auth = async (req, res, next) => {
                 return res.status(401).json({ message: 'Invalid or expired refresh token' });
             }
         }
-            else res.status(401).json({ message: 'Invalid or expired token' })
+        else res.status(401).json({ message: 'Invalid or expired token' })
     }
 }
 

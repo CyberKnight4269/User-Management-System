@@ -4,26 +4,32 @@ const registerUser = async (req, res) => {
     const {name,email,password,phoneNumber} = req.body
     try
     {
-        const userExists = await User.findOne({email})
-        if (userExists) return res.status(400).json({ message: 'User already registered'})
-        const newUser = new User({
-        name,
-        email,
-        password,
-        phoneNumber,
-        })
-        await newUser.save()    //for hashing
-        const token = newUser.generateAuthToken()
-        const refreshToken = newUser.generateRefreshToken()
-        res.status(201).json({
-            message: 'User registered successfully',
-            token,
-            refreshToken
-        })
+        if(email.includes('@') && password.length >= 8)
+        {
+            const userExists = await User.findOne({email})
+            if (userExists) return res.status(400).json({ message: 'User already registered with this email'})
+            const newUser = new User({
+            name,
+            email,
+            password,
+            phoneNumber,
+            })
+            await newUser.save()    //for hashing
+            const token = newUser.generateAuthToken()
+            const refreshToken = newUser.generateRefreshToken()
+            res.status(201).json({
+                message: 'User registered successfully',
+                token,
+                refreshToken
+            })
+        }
+        else if(!(email.includes('@'))) res.status(422).json({message: 'Invalid Email'})
+        else res.status(422).json({message: 'Password is less than 8 characters'})
     }
     catch(err)
     {
-        res.status(500).json({ message: 'Error registering user', error: err.message });
+        if(err.message.includes('phoneNumber')) res.status(400).json({message: 'User already registered with this Phone Number'})
+        else res.status(500).json({ message: 'Error registering user', error: err.message })
     }
 }
 
