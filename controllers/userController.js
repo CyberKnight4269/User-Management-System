@@ -5,6 +5,7 @@ const viewDetails = async(req,res) => {
     {
         const user = await User.findById(req.user.id)
         if (!user) return res.status(404).json({ message: 'User not found' })
+        if(!user.isActive) return res.status(403).json({message: 'This account has been deactivated'})
         else res.status(200).json({name: user.name, email: user.email, phoneNumber: user.phoneNumber})
     }
     catch(error)
@@ -17,9 +18,12 @@ const updateDetails = async(req,res) => {
     const details = req.body
     try
     {
-        const user = await User.findByIdAndUpdate(req.user.id, {$set: details}, {new: true, runValidators: true})
+        const user = await User.findById(req.user.id)
         if(!user) return res.status(404).json({ message: 'User not found' })
-        else res.status(200).json({name: user.name, email: user.email, phoneNumber: user.phoneNumber})
+        if(!user.isActive) return res.status(403).json({message: 'This account has been deactivated'})
+        Object.assign(user,details)
+        await user.save()
+        res.status(200).json({name: user.name, email: user.email, phoneNumber: user.phoneNumber})
     }
     catch(err)
     {
@@ -27,4 +31,10 @@ const updateDetails = async(req,res) => {
     }
 }
 
-module.exports = {viewDetails,updateDetails}
+const deactivateProfile = async(req,res) => {
+    const user = await User.findByIdAndUpdate(req.user.id, {isActive: false}, {new:true})
+    if(!user) return res.status(404).json({ message: 'User not found' })
+    else res.status(200).json({message: 'Profile Deactivated',user})
+}
+
+module.exports = {viewDetails,updateDetails,deactivateProfile}

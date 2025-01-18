@@ -4,6 +4,7 @@ const connectDB = require('./config/db.js')
 const cors = require('cors')
 const authRoute = require('./routes/authRoute.js')
 const userRoute = require('./routes/userRoute.js')
+const superAdminRoute = require('./routes/superAdminRoute.js')
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoute)
 app.use('/api/user',userRoute)
+app.use('/api/admin',superAdminRoute)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))

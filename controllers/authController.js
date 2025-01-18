@@ -7,7 +7,8 @@ const registerUser = async (req, res) => {
         if(email.includes('@') && password.length >= 8)
         {
             const userExists = await User.findOne({email})
-            if (userExists) return res.status(400).json({ message: 'User already registered with this email'})
+            if (userExists && userExists.isActive) return res.status(400).json({ message: 'User already registered with this email'})
+            else if(userExists && !userExists.isActive) return res.status(403).json({message: 'This account has been deactivated'})
             const newUser = new User({
             name,
             email,
@@ -41,6 +42,7 @@ const loginUser = async (req, res) => {
         if (!user) return res.status(400).json({ message: 'Invalid email' })
         const isMatch = await user.matchPassword(password)
         if (!isMatch) return res.status(400).json({ message: 'Password incorrect' })
+        if(!user.isActive) res.status(403).json({message: 'This account has been deactivated'})
         const token = user.generateAuthToken()
         const refreshToken = user.generateRefreshToken()
         res.status(200).json({
