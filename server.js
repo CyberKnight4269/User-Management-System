@@ -21,3 +21,5 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoute)
 app.use('/api/user',userRoute)
 app.use('/api/admin',superAdminRoute)
+
+module.export = app
