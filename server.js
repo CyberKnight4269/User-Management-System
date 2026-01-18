@@ -21,6 +21,3 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoute)
 app.use('/api/user',userRoute)
 app.use('/api/admin',superAdminRoute)
-
-const PORT = process.env.PORT
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
